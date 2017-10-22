@@ -22,6 +22,7 @@ def recursiveBacktracking(assignment, domain, sources):
     return None
 
 
+
 array = Utilities.parseArray("input77.txt")
 domain = Utilities.getDomain(array)
 sources = Utilities.getSources(array)
