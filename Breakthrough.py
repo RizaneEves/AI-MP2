@@ -58,6 +58,18 @@ def makeMove(idx,finidx,board):
     board[finidx[0]][finidx[1]] = curr
     return board
 
+def off_heur(player,board):
+    if player == 'W':
+        return 2.0*(30-len(getPositions(board)[1])) + random()
+    if player == 'B':
+        return 2.0*(30-len(getPositions(board)[0])) + random()
+    
+def def_heur(player,board):
+    if player == 'W':
+        return 2.0*len(getPositions(board)[0]) + random()
+    if player == 'B':
+        return 2.0*len(getPositions(board)[1]) + random()
+
 board = createInitialBoard()
 b2 = makeMove((0,0), (4, 4), board)
 
