@@ -1,9 +1,14 @@
 import numpy as np
 
 def createInitialBoard():
-    board = [[''] * 8] * 8
-    board[0:2] = [['B'] * 8] * 2
-    board[6:8] = [['W'] * 8] * 2
+    board = [['B'] * 8]
+    board.append(['B']*8)
+    board.append([''] * 8)
+    board.append([''] * 8)
+    board.append([''] * 8)
+    board.append([''] * 8)
+    board.append(['W'] * 8)
+    board.append(['W'] * 8)
     return board
 
 
@@ -47,12 +52,13 @@ def getValidMoves(index, board):
 
     return moves
 
-
-
-
+def makeMove(idx,finidx,board):
+    curr = board[idx[0]][idx[1]]
+    board[idx[0]][idx[1]] = ""
+    board[finidx[0]][finidx[1]] = curr
+    return board
 
 board = createInitialBoard()
-makeMove((0,0), (4, 4), board)
+b2 = makeMove((0,0), (4, 4), board)
 
-print(np.array(board))
-
+print(np.array(b2))
