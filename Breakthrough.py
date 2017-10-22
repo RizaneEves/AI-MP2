@@ -1,5 +1,49 @@
 import numpy as np
 
+
+
+class Node:
+    def __init__(self, minOrMax, board,  utlity, parent):
+        self.minOrMax = minOrMax
+        self.board = board
+        self.utility = utlity
+        self.parent = parent
+
+
+
+def miniMax(board, minOrMax, depth):
+    if(depth == 0):
+        boardStates = getAllPossibleMoves(minOrMax, board[:])
+        
+
+
+    if(minOrMax == "W"):
+        max(miniMax(board, 0, depth - 1))
+    else:
+        min(miniMax(board, 1, depth - 1))
+
+
+
+
+def getAllPossibleMoves(player , board):
+
+    allPossibleMoves = []
+    positions = getPositions(board)
+    playerPositions = []
+    if player == "W":
+        playerPositions = positions[0]
+    else:
+        playerPositions = positions[1]
+
+    for position in playerPositions:
+        moves = getValidMoves(position, board)
+        for move in moves:
+            b = makeMove(position, move, board[:])
+            allPossibleMoves.append(b)
+
+    return allPossibleMoves
+
+
 def createInitialBoard():
     board = [['B'] * 8]
     board.append(['B']*8)
@@ -58,7 +102,20 @@ def makeMove(idx,finidx,board):
     board[finidx[0]][finidx[1]] = curr
     return board
 
-board = createInitialBoard()
-b2 = makeMove((0,0), (4, 4), board)
 
-print(np.array(b2))
+
+def isGameOver(board):
+    for x  in board[0]:
+        if x == "W":
+            return True
+    for x in board[7]:
+        if x == "B":
+            return True
+    positions = getPositions(board)
+    if len(positions[0]) == 0 or len(positions[1]) == 0:
+        return True
+
+    return False
+
+
+
