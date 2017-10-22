@@ -23,7 +23,7 @@ def miniMax(board, minOrMax, depth, heuristic):
         return nodes
 
     if(minOrMax == "W"):
-        n = getMaxNode(miniMax(board[:], "B", depth - 1, heuristic))
+        n = getMaxNode(miniMax(copy.deepcopy(board), "B", depth - 1, heuristic))
         nodes = []
         boardStates = getAllPossibleMoves(minOrMax, copy.deepcopy(n.board))
         for b in boardStates:
@@ -34,7 +34,7 @@ def miniMax(board, minOrMax, depth, heuristic):
         return nodes
 
     else:
-        n = getMinNode(miniMax(board[:], "W", depth - 1, heuristic))
+        n = getMinNode(miniMax(copy.deepcopy(board), "W", depth - 1, heuristic))
         nodes = []
         boardStates = getAllPossibleMoves(minOrMax, n.board[:])
         for b in boardStates:
@@ -186,7 +186,7 @@ def isGameOver(board):
 
 def playGame():
     board = createInitialBoard()
-    nodes = miniMax(board, "W", 2, off_heur)
+    nodes = miniMax(copy.deepcopy(board), "W", 2, off_heur)
 
 
 
