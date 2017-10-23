@@ -3,49 +3,76 @@ import random
 import copy
 
 class Node:
-    def __init__(self, minOrMax, board,  utlity, children):
+    def __init__(self, minOrMax, board,  utlity, parent):
         self.minOrMax = minOrMax
         self.board = board
         self.utility = utlity
-        self.children = children
+        self.parent = parent
 
 
 
-def miniMax(board, minOrMax, depth, heuristic):
-    if(depth == 0):
-        nodes = []
-        boardStates = getAllPossibleMoves(minOrMax, copy.deepcopy(board))
-        for b in boardStates:
-            u = heuristic(minOrMax, b)
-            n = Node(minOrMax, b, u, [])
-            nodes.append(n)
+def getOpponent(player):
+    if player == "W":
+        return "B"
+    else: return "W"
 
-        return nodes
 
-    if(minOrMax == "W"):
-        n = getMaxNode(miniMax(copy.deepcopy(board), "B", depth - 1, heuristic))
-        nodes = []
-        boardStates = getAllPossibleMoves(minOrMax, copy.deepcopy(n.board))
-        for b in boardStates:
-            u = heuristic(minOrMax, b)
-            n = Node(minOrMax, b, u, [])
-            nodes.append(n)
+def miniMax(node, depth, heuristic, isMax, player):
+    if depth == 0:
+        return node, heuristic(getOpponent(player), node)
 
-        return nodes
+    if isMax:
+        bestVal = -np.inf
+        bestChild = []
+        for child in getAllPossibleMoves(player, node):
+            n, u = miniMax(child, depth - 1, heuristic, False, getOpponent(player))
+            if u > bestVal:
+                bestVal = u
+                bestChild = child
+
+        return bestChild, bestVal
 
     else:
-        n = getMinNode(miniMax(copy.deepcopy(board), "W", depth - 1, heuristic))
-        nodes = []
-        boardStates = getAllPossibleMoves(minOrMax, n.board[:])
-        for b in boardStates:
-            u = heuristic(minOrMax, b)
-            n = Node(minOrMax, b, u, [])
-            nodes.append(n)
+        bestVal = np.inf
+        bestChild = []
+        for child in getAllPossibleMoves(player, node):
+            n, u = miniMax(child, depth - 1, heuristic, False, getOpponent(player))
+            if u < bestVal:
+                bestVal = u
+                bestChild = child
 
-        return nodes
+        return bestChild, bestVal
 
+def alphaBeta(node, depth, heuristic, alpha, beta, isMax, player):
+    if depth == 0:
+        return node, heuristic(getOpponent(player), node)
+    if isMax:
+        u = -np.inf
+        children = {}
+        for child in getAllPossibleMoves(player, node):
+            u = max(u, alphaBeta(node, depth - 1, heuristic, alpha, beta, False, getOpponent(player))[1])
+            children[u] = child
+            alpha = max (alpha, u)
+            if beta <= alpha:
+                break
+        return children[u], u
 
+    else:
+        u = np.inf
+        children = {}
+        for child in getAllPossibleMoves(player, node):
+            u = min(u, alphaBeta(node, depth - 1, heuristic, alpha, beta, False, getOpponent(player))[1])
+            children[u] = child
+            beta = min (beta, u)
+            if beta <= alpha:
+                break
+        return children[u], u
 
+def miniMax3(node, heuristic, player):
+    return miniMax(node, 3, heuristic, True, player)[0]
+
+def alphaBeta3(node, heuristic, player):
+    return alphaBeta(node, 3, heuristic, -np.inf, np.inf, True, player)[0]
 
 def getMaxNode(nodes):
     maxVal = nodes[0].utility
@@ -77,13 +104,11 @@ def getAllPossibleMoves(player , board):
 
     for position in playerPositions:
         moves = getValidMoves(position, board)
-        print(moves)
         for move in moves:
             b = makeMove(position, move, copy.deepcopy(board))
             allPossibleMoves.append(b)
 
-    for p in allPossibleMoves:
-        print(np.array(p))
+
     return allPossibleMoves
 
 
@@ -123,26 +148,26 @@ def getValidMoves(index, board):
     if(board[x][y] ==  " "):
         return None
     elif(board[x][y] == "B"):
-        if((y + 1) < 8):
-            if((x - 1) >= 0):
-                if(board[x-1][y+1] != "B"):
-                    moves.append((x - 1, y + 1))
-            if((x + 1) < 8):
+        if((x + 1) < 8):
+            if((y - 1) >= 0):
+                if(board[x + 1][y - 1] != "B"):
+                    moves.append((x + 1, y - 1))
+            if((y + 1) < 8):
                 if (board[x + 1][y + 1] != "B"):
                     moves.append((x + 1, y + 1))
-            if board[x][y + 1] == " ":
-                moves.append((x, y + 1))
+            if board[x + 1][y] == " ":
+                moves.append((x + 1, y))
 
     elif(board[x][y] == "W"):
-        if((y - 1) >= 0):
-            if((x - 1) >= 0):
+        if((x - 1) >= 0):
+            if((y - 1) >= 0):
                 if (board[x - 1][y - 1] != "W"):
                     moves.append((x - 1, y - 1))
-            if((x + 1) < 8):
-                if (board[x + 1][y - 1] != "W"):
-                    moves.append((x + 1, y - 1))
-            if board[x][y - 1] == " ":
-                moves.append((x, y - 1))
+            if((y + 1) < 8):
+                if (board[x - 1][y + 1] != "W"):
+                    moves.append((x - 1, y + 1))
+            if board[x - 1][y] == " ":
+                moves.append((x - 1, y))
 
     return moves
 
@@ -184,10 +209,19 @@ def isGameOver(board):
 
 
 
-def playGame():
+def playGame(searches, heuristics):
     board = createInitialBoard()
-    nodes = miniMax(copy.deepcopy(board), "W", 2, off_heur)
+
+
+    turn = 0
+    player = ["W", "B"]
+    while(not isGameOver(board)):
+        print(turn % 2)
+        board = searches[turn % 2](board, heuristics[turn % 2], player[turn % 2])
+        print(np.array(board))
+        turn+=1
 
 
 
-print(playGame())
+
+print(playGame([miniMax3, alphaBeta3], [off_heur, def_heur]))
