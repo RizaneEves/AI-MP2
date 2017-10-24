@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import copy
+import time
 
 class Node:
     def __init__(self, minOrMax, board,  utlity, parent):
@@ -61,7 +62,7 @@ def alphaBeta(node, depth, heuristic, alpha, beta, isMax, player):
         u = np.inf
         children = {}
         for child in getAllPossibleMoves(player, node):
-            u = min(u, alphaBeta(node, depth - 1, heuristic, alpha, beta, False, getOpponent(player))[1])
+            u = min(u, alphaBeta(node, depth - 1, heuristic, alpha, beta, True, getOpponent(player))[1])
             children[u] = child
             beta = min (beta, u)
             if beta <= alpha:
@@ -219,6 +220,7 @@ def playGame(searches, heuristics):
         print(turn % 2)
         board = searches[turn % 2](board, heuristics[turn % 2], player[turn % 2])
         print(np.array(board))
+        #time.sleep(1)
         turn+=1
 
 
