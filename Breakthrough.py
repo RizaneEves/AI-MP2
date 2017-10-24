@@ -4,10 +4,6 @@ import copy
 import time
 
 
-def getOpponent(player):
-    if player == "W":
-        return "B"
-    else: return "W"
 
 
 def miniMax(node, depth, heuristic, isMax, player):
@@ -36,54 +32,44 @@ def miniMax(node, depth, heuristic, isMax, player):
 
         return bestChild, bestVal
 
+
 def alphaBeta(node, depth, heuristic, alpha, beta, isMax, player):
     if depth == 0:
         return node, heuristic(getOpponent(player), node)
     if isMax:
         u = -np.inf
-        children = {}
+        bestChild = []
         for child in getAllPossibleMoves(player, node):
-            u = max(u, alphaBeta(node, depth - 1, heuristic, alpha, beta, False, getOpponent(player))[1])
-            children[u] = child
+            v = alphaBeta(node, depth - 1, heuristic, alpha, beta, False, getOpponent(player))[1]
+            if (v > u):
+                u = v
+                bestChild = child
             alpha = max (alpha, u)
             if beta <= alpha:
                 break
-        return children[u], u
+        return bestChild, u
 
     else:
         u = np.inf
-        children = {}
+        bestChild = []
         for child in getAllPossibleMoves(player, node):
-            u = min(u, alphaBeta(node, depth - 1, heuristic, alpha, beta, True, getOpponent(player))[1])
-            children[u] = child
+            v = alphaBeta(node, depth - 1, heuristic, alpha, beta, False, getOpponent(player))[1]
+            if (v < u):
+                u = v
+                bestChild = child
             beta = min (beta, u)
             if beta <= alpha:
                 break
-        return children[u], u
+        return bestChild, u
+
 
 def miniMax3(node, heuristic, player):
     return miniMax(node, 3, heuristic, True, player)[0]
 
+
 def alphaBeta3(node, heuristic, player):
     return alphaBeta(node, 3, heuristic, -np.inf, np.inf, True, player)[0]
 
-def getMaxNode(nodes):
-    maxVal = nodes[0].utility
-    maxNode = nodes[0]
-    for node in nodes:
-        if node.utility > maxVal:
-            maxVal = node.utility
-            maxNode = node
-    return maxNode
-
-def getMinNode(nodes):
-    minVal = nodes[0].utility
-    minNode = nodes[0]
-    for node in nodes:
-        if node.utility < minVal:
-            minVal = node.utility
-            minNode = node
-    return minNode
 
 def getAllPossibleMoves(player , board):
 
@@ -115,6 +101,12 @@ def createInitialBoard():
     board.append(['W'] * 8)
     board.append(['W'] * 8)
     return board
+
+
+def getOpponent(player):
+    if player == "W":
+        return "B"
+    else: return "W"
 
 
 def getPositions(board):
@@ -164,6 +156,7 @@ def getValidMoves(index, board):
 
     return moves
 
+
 def makeMove(idx,finidx,board):
     curr = board[idx[0]][idx[1]]
     board[idx[0]][idx[1]] = " "
@@ -184,8 +177,6 @@ def def_heur(player,board):
     if player == 'B':
         return 2.0*len(getPositions(board)[1]) + random.random()
 
-board = createInitialBoard()
-b2 = makeMove((0,0), (4, 4), board)
 
 def isGameOver(board):
     for x  in board[0]:
@@ -199,7 +190,6 @@ def isGameOver(board):
         return True
 
     return False
-
 
 
 def playGame(searches, heuristics):
@@ -218,4 +208,4 @@ def playGame(searches, heuristics):
 
 
 
-print(playGame([miniMax3, alphaBeta3], [off_heur, def_heur]))
+print(playGame([miniMax3, miniMax3], [off_heur, def_heur]))
