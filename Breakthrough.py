@@ -3,14 +3,6 @@ import random
 import copy
 import time
 
-class Node:
-    def __init__(self, minOrMax, board,  utlity, parent):
-        self.minOrMax = minOrMax
-        self.board = board
-        self.utility = utlity
-        self.parent = parent
-
-
 
 def getOpponent(player):
     if player == "W":
