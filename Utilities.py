@@ -55,6 +55,32 @@ def getRandomUnassignedIndex(array):
         return random.choice(unassignedIndices)
 
 
+def getAllUnassignedIndexNearColored(array):
+    unassignedIndices = []
+    for i in range(len(array)):
+        for j in range(len(array[0])):
+            if array[i][j] != "_":
+                neighbors = getValidNeighbors(i, j, array)
+                for neighbor in neighbors:
+                    if array[neighbor[0]][neighbor[1]] == "_":
+                        unassignedIndices.append(neighbor)
+    return unassignedIndices
+
+def getMostConstrainedVariable(indexes,domain,assignment,sources):
+    if len(indexes) == 0:
+        return None
+    curr_mcv = None
+    least_count = 100
+    for idx in indexes:
+        curr_count = 0
+        for value in domain:
+            if isValueConsistent(idx,value,assignment,sources):
+                curr_count += 1
+        if curr_count < least_count:
+            least_count = curr_count
+            curr_mcv = idx
+    return curr_mcv
+
 def getUnassignedIndexNearColored(array):
     unassignedIndices = []
     for i in range(len(array)):
