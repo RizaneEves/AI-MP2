@@ -43,10 +43,10 @@ def recursiveBacktracking_mcv(assignment, domain, sources):
 
     return None
 
-array = Utilities.parseArray("input991.txt")
+array = Utilities.parseArray("input10.txt")
 domain = Utilities.getDomain(array)
 sources = Utilities.getSources(array)
 
 result = recursiveBacktracking_mcv(array, domain, sources)
 print(np.array(result))
-Utilities.writeArrayToFile(result, "output991.txt")
+Utilities.writeArrayToFile(result, "output10.txt")
