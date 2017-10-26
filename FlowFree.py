@@ -35,18 +35,18 @@ def recursiveBacktracking_mcv(assignment, domain, sources):
         if Utilities.isValueConsistent(index, value, assignment, sources):
             #print("Assigning " + value + " to " + "(" + str(index[0]) + ", " + str(index[1]) + ")\n")
             assignment[index[0]][index[1]] = value
-            #print(np.array(assignment))
-            result = recursiveBacktracking(assignment, domain, sources)
+            print(np.array(assignment))
+            result = recursiveBacktracking_mcv(assignment, domain, sources)
             if result is not None:
                 return result
             assignment[index[0]][index[1]] = "_"
 
     return None
 
-array = Utilities.parseArray("sample.txt")
+array = Utilities.parseArray("input991.txt")
 domain = Utilities.getDomain(array)
 sources = Utilities.getSources(array)
 
 result = recursiveBacktracking_mcv(array, domain, sources)
 print(np.array(result))
-Utilities.writeArrayToFile(result, "sample_sol.txt")
+Utilities.writeArrayToFile(result, "output991.txt")
