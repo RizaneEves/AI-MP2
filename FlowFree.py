@@ -1,4 +1,5 @@
 import Utilities
+import time
 import numpy as np
 
 def recursiveBacktracking(assignment, domain, sources):
@@ -43,6 +44,8 @@ def recursiveBacktracking_mcv(assignment, domain, sources):
 
     return None
 
+startTime = time.time()
+
 array = Utilities.parseArray("input10.txt")
 domain = Utilities.getDomain(array)
 sources = Utilities.getSources(array)
@@ -50,3 +53,6 @@ sources = Utilities.getSources(array)
 result = recursiveBacktracking_mcv(array, domain, sources)
 print(np.array(result))
 Utilities.writeArrayToFile(result, "output10.txt")
+
+endTime = time.time()
+print("Search took " + str(endTime - startTime) + " seconds.")
