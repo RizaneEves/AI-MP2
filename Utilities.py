@@ -54,7 +54,9 @@ def getRandomUnassignedIndex(array):
     else:
         return random.choice(unassignedIndices)
 
-
+'''
+Gets all unassigned grids neighboring an assigned grid
+'''
 def getAllUnassignedIndexNearColored(array):
     unassignedIndices = []
     for i in range(len(array)):
@@ -66,6 +68,9 @@ def getAllUnassignedIndexNearColored(array):
                         unassignedIndices.append(neighbor)
     return unassignedIndices
 
+'''
+Gets most constrained unassigned grid
+'''
 def getMostConstrainedVariable(indexes,domain,assignment,sources):
     if len(indexes) == 0:
         return None
@@ -81,6 +86,9 @@ def getMostConstrainedVariable(indexes,domain,assignment,sources):
             curr_mcv = idx
     return curr_mcv
 
+'''
+Gets a random unassigned grid that neighbors an assigned grid
+'''
 def getUnassignedIndexNearColored(array):
     unassignedIndices = []
     for i in range(len(array)):
@@ -95,6 +103,9 @@ def getUnassignedIndexNearColored(array):
     else:
         return random.choice(list(set(unassignedIndices)))
 
+'''
+Checks if a value assignment violates any constraints
+'''
 def isValueConsistent(index, value, assignment, sources):
     x = index[0]
     y = index[1]
@@ -110,8 +121,9 @@ def isValueConsistent(index, value, assignment, sources):
     assignment[x][y] = "_"
     return b
 
-
-
+'''
+Checks if a variable assignment violates any constraints
+'''
 def isVariableConsistent(x, y, assignment, sources):
     countSameColorNeighs = countSameColorNeighbors(x, y, assignment)
     countUnassignedNeighs = countNeighborsWithValue(x, y, assignment, )
@@ -124,6 +136,9 @@ def isVariableConsistent(x, y, assignment, sources):
                     return False
     return True
 
+'''
+Checks if puzzle is complete and no constraints violated
+'''
 def isAssignmentValid(assignment, sources):
     for x in range(len(assignment)):
         for y in range(len(assignment[0])):
@@ -136,6 +151,9 @@ def isAssignmentValid(assignment, sources):
                     return False
     return True
 
+'''
+number of neighbors with a specific value
+'''
 def countNeighborsWithValue(x, y, assignment, value = "_"):
     count = 0
     neighbors = getValidNeighbors(x, y, assignment)
