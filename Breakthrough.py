@@ -5,7 +5,9 @@ import time
 import multiprocessing
 
 
-
+'''
+Implementation of minimax. Returns the state of the board that will be the result of the minimax player's next move and tje number of expanded nodes on the way.
+'''
 def miniMax(node, depth, heuristic, isMax, player, expanded):
     if depth == 0:
         return node, heuristic(getOpponent(player), node), expanded
@@ -36,7 +38,9 @@ def miniMax(node, depth, heuristic, isMax, player, expanded):
 
         return bestChild, bestVal,expanded
 
-
+'''
+Implementation of Alpha-Beta search. Returns the state of the board that will be the result of the Alpha-Beta player's next move and tje number of expanded nodes on the way.
+'''
 def alphaBeta(node, depth, heuristic, alpha, beta, isMax, player, expanded):
     if depth == 0:
         return node, heuristic(getOpponent(player), node), expanded
@@ -70,17 +74,27 @@ def alphaBeta(node, depth, heuristic, alpha, beta, isMax, player, expanded):
             beta = min (beta, u)
         return bestChild, u, expanded
 
-
+'''
+Helper function that runs minimax with a depth of 3
+'''
 def miniMax3(node, heuristic, player):
     return miniMax(node, 3, heuristic, True, player, 0)
 
-
+'''
+Helper function that runs Alpha-Beta with a depth of 4
+'''
 def alphaBeta4(node, heuristic, player):
     return alphaBeta(node, 4, heuristic, -np.inf, np.inf, True, player, 0)
 
+'''
+Helper function that runs Alpha-Beta with a depth of 3
+'''
 def alphaBeta3(node, heuristic, player):
     return alphaBeta(node, 3, heuristic, -np.inf, np.inf, True, player, 0)
 
+'''
+Gets all the possible final board states that result from player making each available move on the specified board
+'''
 def getAllPossibleMoves(player , board):
 
     allPossibleMoves = []
@@ -100,7 +114,9 @@ def getAllPossibleMoves(player , board):
 
     return allPossibleMoves
 
-
+'''
+Sets up the inital board as a 2D array of characters with 'W' to represent the white player and 'B' to represent the black player
+'''
 def createInitialBoard():
     board = [['B'] * 8]
     board.append(['B']*8)
@@ -113,12 +129,18 @@ def createInitialBoard():
     return board
 
 
+'''
+Given a player, get his oppoenent.
+'''
 def getOpponent(player):
     if player == "W":
         return "B"
     else: return "W"
 
 
+'''
+Get a pair of lists (whitePositions and blackPositions) where each list contains the indices of all its colored pieces
+'''
 def getPositions(board):
 
     blackPositions = []
@@ -134,6 +156,9 @@ def getPositions(board):
     return whitePositions, blackPositions
 
 
+'''
+Get all valid moves for a specific piece of the board and return a list of final positions after each move
+'''
 def getValidMoves(index, board):
     x = index[0]
     y = index[1]
@@ -167,13 +192,18 @@ def getValidMoves(index, board):
     return moves
 
 
+'''
+Makes a move from a starting index to a final index and gets the resulting board state
+'''
 def makeMove(idx,finidx,board):
     curr = board[idx[0]][idx[1]]
     board[idx[0]][idx[1]] = " "
     board[finidx[0]][finidx[1]] = curr
     return board
 
-
+'''
+Implementation of offensive heuristic 1
+'''
 def off_heur(player,board):
     positions = getPositions(board)
     if player == 'W':
@@ -181,7 +211,9 @@ def off_heur(player,board):
     if player == 'B':
         return 2.0*(30-len(positions[0])) + random.random()
 
-
+'''
+Implementation of defensive heuristic 1
+'''
 def def_heur(player,board):
     positions = getPositions(board)
     if player == 'W':
@@ -189,7 +221,9 @@ def def_heur(player,board):
     if player == 'B':
         return 2.0*len(positions[1]) + random.random()
 
-
+'''
+Gets the average distance required to win for the player by checking how far each of player's pieces are from the opponent's side of the board
+'''
 def getAvgDistToWin(player, board, positions):
     if(player == "W"):
         sumDist = 0.0
@@ -206,7 +240,9 @@ def getAvgDistToWin(player, board, positions):
                     sumDist+= float(7 - y)
         return sumDist/float(len(positions[1]))
 
-
+'''
+Gets the minimum distance to win for the player by checking how far the closest piece to the opponent's side is
+'''
 def getDistToWin(player, board):
     if(player == "W"):
         for y in range(8):
@@ -237,7 +273,9 @@ def getMaxDistToWin(player, board):
 
     return 7
 
-
+'''
+Implementation of offensive heuristic 2 - Prioritizes having a lower average distance to win while aggressive moves are a bonus
+'''
 def off_heur2(player, board):
     positions = getPositions(board)
     dist = getAvgDistToWin(player, board, positions)
@@ -248,7 +286,9 @@ def off_heur2(player, board):
     else:
         return 0.3*(30 - len(positions[0])) + 3.0*(20 - dist) + random.random()
 
-
+'''
+Implementation of defensive heuristic 2 - Prioritizes having a lower average to distance to win while moves that prevent ally pieces from being captured are a bonus
+'''
 def def_heur2(player, board):
     positions = getPositions(board)
     dist = getAvgDistToWin(player, board, positions)
@@ -260,7 +300,9 @@ def def_heur2(player, board):
     else:
         return 3*(20 - dist) + 0.3 * len(positions[1]) + random.random()
 
-
+'''
+Checks the state of the board to see if the game is over. If the game is over return True, else return False
+'''
 def isGameOver(board):
     positions = getPositions(board)
     if len(positions[0]) == 0 or len(positions[1]) == 0:
@@ -277,7 +319,9 @@ def isGameOver(board):
 
     return False
 
-
+'''
+Plays a specific game where each player will use a search strategy and a heuristic and outputs statistics of the game
+'''
 def playGame(searches, heuristics):
     board = createInitialBoard()
 
@@ -316,7 +360,9 @@ def playMultipleGames(searches, heuristics, numGames):
 
     return winners
 
-
+'''
+A multi-process method that plays a single game and updates total statistics recorded
+'''
 def playGameProcess(searches, heuristics, winners, boards, expandeds, averageExpandeds, allTurns, allTimes):
     winner, board, expanded, averageExpanded, turns, times = playGame(searches, heuristics)
     winners[winner] += 1
@@ -326,7 +372,9 @@ def playGameProcess(searches, heuristics, winners, boards, expandeds, averageExp
     allTurns.append(turns)
     allTimes.append(times)
 
-
+'''
+Prints the results of a specific matchup
+'''
 def printReport(matchup, winners, boards, expandeds, averageExpandeds, allTurns, allTimes, opponentsCaptured):
     print("--------------------\n")
     print(matchup)
@@ -355,7 +403,9 @@ def printReport(matchup, winners, boards, expandeds, averageExpandeds, allTurns,
     print(allTurns)
     print("--------------------\n")
 
-
+'''
+Play multiple games for this matchup where each game is a separate process
+'''
 def playMatchupMultipleProcesses(matchup, searches, heuristics, numGames):
     manager = multiprocessing.Manager()
     winners = manager.dict()
@@ -382,6 +432,9 @@ def playMatchupMultipleProcesses(matchup, searches, heuristics, numGames):
     printReport(matchup, winners, boards, expandeds, averageExpandeds, allTurns, allTimes, opponentsCaptured)
 
 
+'''
+Main loop - Plays all the matchups and records the results
+'''
 if __name__ == '__main__':
     matchups = ["1. Minimax (Offensive Heuristic 1) vs Alpha-beta (Offensive Heuristic 1)", "2. Alpha-beta (Offensive Heuristic 2) vs Alpha-beta (Defensive Heuristic 1)", "3. Alpha-beta (Defensive Heuristic 2) vs Alpha-beta (Offensive Heuristic 1)", "4. Alpha-beta (Offensive Heuristic 2) vs Alpha-beta (Offensive Heuristic 1)", "5. Alpha-beta (Defensive Heuristic 2) vs Alpha-beta (Defensive Heuristic 1)", "6. Alpha-beta (Offensive Heuristic 2) vs Alpha-beta (Defensive Heuristic 2)"]
     searches = [[miniMax3, alphaBeta4], [alphaBeta4, alphaBeta4], [alphaBeta4, alphaBeta4], [alphaBeta4, alphaBeta4], [alphaBeta4, alphaBeta4], [alphaBeta4, alphaBeta4] ]
